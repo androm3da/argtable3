@@ -251,13 +251,16 @@ extern   char *optarg;                  /* getopt(3) external variables */
 extern   int opterr;
 extern   int optind;
 extern   int optopt;
-extern   int optreset;
+int optreset;
 extern   char *suboptarg;               /* getsubopt(3) external variable */
 #endif /* _GETOPT_DEFINED */
  
 #ifdef __cplusplus
 }
 #endif
+
+#else
+#include <stdlib.h>
 #endif /* !_GETOPT_H_ */
 /*	$Id: getopt_long.c,v 1.1 2009/10/16 19:50:28 rodney Exp rodney $	*/
 /*	$OpenBSD: getopt_long.c,v 1.23 2007/10/31 12:34:57 chl Exp $	*/
@@ -323,7 +326,7 @@ static const char rcsid[]="$Id: getopt_long.c,v 1.1 2009/10/16 19:50:28 rodney E
 #include <string.h>
 
 
-#define	REPLACE_GETOPT		/* use this getopt as the system getopt(3) */
+#undef	REPLACE_GETOPT		/* use this getopt as the system getopt(3) */
 
 #ifdef REPLACE_GETOPT
 int	opterr = 1;		/* if error message should be printed */
@@ -367,7 +370,7 @@ static const char noarg[] = "option doesn't take an argument -- %.*s";
 static const char illoptchar[] = "unknown option -- %c";
 static const char illoptstring[] = "unknown option -- %s";
 
-
+#define _WIN32
 
 #ifdef _WIN32
 
@@ -399,7 +402,7 @@ static void warnx(const char *fmt, ...)
 #ifdef __STDC_WANT_SECURE_LIB__
         _vsnprintf_s(opterrmsg, MAX_OPTER_MSG_SIZE, sizeof(opterrmsg) - 1, fmt, ap);
 #else
-        _vsnprintf(opterrmsg, sizeof(opterrmsg) - 1, fmt, ap);
+        vsnprintf(opterrmsg, sizeof(opterrmsg) - 1, fmt, ap);
 #endif
 	va_end(ap);
 
@@ -409,6 +412,7 @@ static void warnx(const char *fmt, ...)
 
 #else
 #include <err.h>
+
 #endif /*_WIN32*/
 
 
@@ -2253,7 +2257,7 @@ static int arg_int_scanfn(struct arg_int *parent, const char *argval)
         /* Safety check for integer overflow. WARNING: this check    */
         /* achieves nothing on machines where size(int)==size(long). */
         if ( val > INT_MAX || val < INT_MIN )
-            errorcode = EOVERFLOW_;
+            errorcode = EOVERFLOW;
 
         /* Detect any suffixes (KB,MB,GB) and multiply argument value appropriately. */
         /* We need to be mindful of integer overflows when using such big numbers.   */

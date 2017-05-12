@@ -73,7 +73,7 @@ testall: testall.c testarglit.c testargstr.c testargint.c testargdate.c \
 		testargrex.c
 
 runtests:
-	bin/testall
+	hexagon-sim bin/testall
 
 
 cleanall:
